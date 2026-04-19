@@ -14,7 +14,20 @@ const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors());
+const allowedOrigins = [
+  "https://dht-scene-studio.onrender.com"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -30,6 +43,12 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 app.post("/generate-image", upload.single("referenceImage"), async (req, res) => {
   try {
+    const origin = req.headers.origin;
+
+    if (origin && !allowedOrigins.includes(origin)) {
+      return res.status(403).json({ error: "Not allowed." });
+    }
+
     const prompt = req.body.prompt;
 
     if (!process.env.GEMINI_API_KEY) {
