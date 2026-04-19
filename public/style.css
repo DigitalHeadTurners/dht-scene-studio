@@ -17,27 +17,18 @@ body {
 
 .header {
   text-align: center;
-  margin-bottom: 40px;
-  max-width: 900px;
+  margin-bottom: 44px;
+  max-width: 980px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.brand-tag {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #d4b467;
-  margin-bottom: 16px;
-}
-
-.header h1 {
-  margin: 0 0 12px;
-  font-size: 64px;
-  line-height: 1.05;
-  font-weight: 800;
-  letter-spacing: -1.5px;
+.logo {
+  width: 540px;
+  max-width: 92%;
+  height: auto;
+  display: block;
+  margin: 0 auto 18px;
 }
 
 .headline {
@@ -72,10 +63,11 @@ body {
 }
 
 .panel {
-  background: #121212;
-  border: 1px solid #2a2a2a;
-  border-radius: 20px;
-  padding: 24px;
+  background: #101010;
+  border: 1px solid #252525;
+  border-radius: 24px;
+  padding: 26px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.01) inset;
 }
 
 .panel h2 {
@@ -83,6 +75,7 @@ body {
   margin-bottom: 14px;
   font-size: 24px;
   line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
 .help-text,
@@ -90,7 +83,7 @@ body {
 .status-message {
   color: #bfbfbf;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .status-message {
@@ -109,7 +102,7 @@ input[type="file"],
 select,
 textarea {
   width: 100%;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid #3a3a3a;
   background: #f4f4f4;
   color: #111111;
@@ -121,7 +114,7 @@ textarea {
   resize: vertical;
   min-height: 460px;
   margin-top: 10px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .button-group {
@@ -132,24 +125,26 @@ textarea {
 
 button {
   width: 100%;
-  padding: 16px;
-  border-radius: 14px;
+  padding: 18px;
+  border-radius: 16px;
   border: none;
   background: #d8b56a;
   color: #111111;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 17px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 button:hover {
   background: #caa24f;
+  transform: translateY(-1px);
 }
 
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
 }
 
 .image-frame,
@@ -158,7 +153,7 @@ button:disabled {
   min-height: 420px;
   background: #0a0a0a;
   border: 1px dashed #3f3f3f;
-  border-radius: 18px;
+  border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -202,6 +197,16 @@ button:disabled {
   vertical-align: middle;
 }
 
+.footer {
+  text-align: center;
+  margin-top: 38px;
+  padding-top: 22px;
+  border-top: 1px solid #252525;
+  font-size: 13px;
+  color: #7d7d7d;
+  letter-spacing: 0.3px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -213,8 +218,8 @@ button:disabled {
 }
 
 @media (max-width: 1100px) {
-  .header h1 {
-    font-size: 50px;
+  .logo {
+    width: 460px;
   }
 
   .headline {
@@ -236,33 +241,73 @@ button:disabled {
   }
 
   .page {
-    padding: 26px 18px 42px;
+    padding: 22px 14px 38px;
   }
 
-  .brand-tag {
-    font-size: 15px;
-    letter-spacing: 2.4px;
+  .header {
+    margin-bottom: 30px;
   }
 
-  .header h1 {
-    font-size: 38px;
-    letter-spacing: -1px;
+  .logo {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 14px;
   }
 
   .headline {
     font-size: 17px;
+    line-height: 1.45;
+    margin-bottom: 10px;
   }
 
   .subtext {
     font-size: 15px;
     max-width: 100%;
+    line-height: 1.65;
+  }
+
+  .panel {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .panel h2 {
+    font-size: 21px;
+    margin-bottom: 12px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input[type="file"],
+  select,
+  textarea {
+    font-size: 15px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 17px;
+  }
+
+  .image-frame {
+    min-height: 320px;
   }
 
   .generated-image-frame {
-    min-height: 420px;
+    min-height: 360px;
   }
 
   textarea {
-    min-height: 300px;
+    min-height: 280px;
+  }
+
+  .footer {
+    margin-top: 28px;
+    padding-top: 18px;
+    font-size: 12px;
   }
 }
