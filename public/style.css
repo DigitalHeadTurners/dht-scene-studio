@@ -241,29 +241,31 @@ button:disabled {
   }
 
   .page {
-    padding: 22px 14px 38px;
+    padding: 18px 14px 34px;
   }
 
   .header {
-    margin-bottom: 30px;
+    margin-bottom: 18px;
   }
 
   .logo {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 14px;
+    width: 340px;
+    max-width: 88%;
+    height: auto;
+    display: block;
+    margin: 0 auto 6px;
   }
 
   .headline {
     font-size: 17px;
-    line-height: 1.45;
-    margin-bottom: 10px;
+    line-height: 1.35;
+    margin: 2px 0 6px;
   }
 
   .subtext {
     font-size: 15px;
     max-width: 100%;
-    line-height: 1.65;
+    line-height: 1.55;
   }
 
   .panel {
