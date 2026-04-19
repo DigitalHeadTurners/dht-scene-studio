@@ -1,3 +1,42 @@
+const uploadInput = document.getElementById("upload");
+const previewImage = document.getElementById("preview");
+const emptyState = document.getElementById("emptyState");
+
+const generateBtn = document.getElementById("generateBtn");
+const generateImageBtn = document.getElementById("generateImageBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+
+const resultBox = document.getElementById("result");
+const statusMessage = document.getElementById("statusMessage");
+
+const generatedImage = document.getElementById("generatedImage");
+const generatedEmptyState = document.getElementById("generatedEmptyState");
+
+let latestGeneratedImageUrl = "";
+
+// IMAGE PREVIEW
+if (uploadInput) {
+  uploadInput.addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      if (previewImage) {
+        previewImage.src = e.target.result;
+        previewImage.style.display = "block";
+      }
+
+      if (emptyState) {
+        emptyState.style.display = "none";
+      }
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
 // KEEP EVERYTHING ABOVE (DOM elements + preview logic) EXACTLY THE SAME
 
 function buildPrompt() {
