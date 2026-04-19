@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 import { GoogleGenAI, Modality } from "@google/genai";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -39,9 +40,19 @@ const upload = multer({
   }
 });
 
+const generateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many image requests. Please wait a few minutes and try again."
+  }
+});
+
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-app.post("/generate-image", upload.single("referenceImage"), async (req, res) => {
+app.post("/generate-image", generateLimiter, upload.single("referenceImage"), async (req, res) => {
   try {
     const origin = req.headers.origin;
 
