@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DHT Signature Scene Studio</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="brand-tag">DIGITAL HEAD TURNERS</div>
+
+      <h1>DHT Signature Scene Studio</h1>
+
+      <p class="headline">
+        Transform your image into a high-end, luxury editorial scene
+      </p>
+
+      <p class="subtext">
+        Upload your photo. Select your scene. Generate a polished, scroll-stopping visual with precision styling and identity retention.
+      </p>
+    </header>
+
+    <div class="layout">
+      <div class="panel">
+        <h2>Reference Image</h2>
+        <p class="help-text">
+          Best results: clear face visibility, full or half-body image, good lighting, minimal blur, one person only.
+        </p>
+
+        <input type="file" id="upload" accept="image/*" />
+
+        <div class="image-frame">
+          <img id="preview" alt="Preview will appear here" />
+          <div id="emptyState" class="empty-state">Image preview will appear here</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Customize Your Scene</h2>
+
+        <label for="category">Category</label>
+        <select id="category">
+          <option>Birthday Glam</option>
+          <option>Fitness Glam</option>
+          <option>Sunday’s Best</option>
+          <option>Bossed Up Errands</option>
+          <option>Vacation Glam</option>
+          <option>Date Night</option>
+          <option>CEO Soft Luxury</option>
+          <option>Brunch Baddie</option>
+          <option>Content Creator Day</option>
+          <option>Luxury Lifestyle</option>
+          <option>Editorial Studio</option>
+          <option>Rich Girl Casual</option>
+        </select>
+
+        <label for="scene">Scene</label>
+        <select id="scene">
+          <option>Luxury hotel suite</option>
+          <option>Modern minimalist studio</option>
+          <option>Upscale restaurant</option>
+          <option>City street</option>
+          <option>High-end gym</option>
+          <option>Church lobby</option>
+          <option>Poolside resort</option>
+          <option>Designer store</option>
+          <option>Luxury car</option>
+          <option>Marble bathroom</option>
+        </select>
+
+        <label for="pose">Pose</label>
+        <select id="pose">
+          <option>Mirror selfie</option>
+          <option>Seated confident pose</option>
+          <option>Walking toward camera</option>
+          <option>Over-the-shoulder look</option>
+          <option>Stepping out of car</option>
+          <option>Standing with hand on hip</option>
+          <option>Candid laugh</option>
+          <option>Looking away</option>
+          <option>Leaning pose</option>
+          <option>Phone interaction</option>
+          <option>Adjusting outfit or hair</option>
+          <option>Crossed-leg stance</option>
+        </select>
+
+        <label for="styling">Styling</label>
+        <select id="styling">
+          <option>Sleek and polished</option>
+          <option>Soft glam</option>
+          <option>Bold glam</option>
+          <option>Sporty luxe</option>
+          <option>Feminine luxury</option>
+          <option>High-fashion editorial</option>
+          <option>Effortless rich-girl</option>
+          <option>Classy and refined</option>
+        </select>
+
+        <label for="colorDirection">Color Direction</label>
+        <select id="colorDirection">
+          <option>No Preference</option>
+          <option>Black</option>
+          <option>White</option>
+          <option>Ivory / Cream</option>
+          <option>Silver / Metallic</option>
+          <option>Gray / Charcoal</option>
+          <option>Beige / Nude</option>
+          <option>Brown / Chocolate</option>
+          <option>Indigo</option>
+          <option>Navy</option>
+          <option>Blue</option>
+          <option>Purple</option>
+          <option>Pink</option>
+          <option>Red</option>
+          <option>Burgundy / Wine</option>
+          <option>Green / Emerald</option>
+          <option>Yellow / Gold</option>
+          <option>Orange / Rust</option>
+        </select>
+
+        <label for="strength">Output Strength</label>
+        <select id="strength">
+          <option>Subtle variation</option>
+          <option>Moderate transformation</option>
+          <option>Full creative transformation</option>
+        </select>
+
+        <label for="size">Output Size</label>
+        <select id="size">
+          <option value="3:4">3:4 (Feed / TikTok Photo Style)</option>
+          <option value="9:16">9:16 (Story / Video Style)</option>
+        </select>
+
+        <div class="button-group">
+          <button id="generateBtn" type="button">Generate Prompt</button>
+          <button id="generateImageBtn" type="button">Generate Image</button>
+          <button id="downloadBtn" type="button" disabled>Download Image</button>
+        </div>
+
+        <p id="statusMessage" class="status-message"></p>
+      </div>
+    </div>
+
+    <div class="results-grid">
+      <div class="panel output-panel">
+        <h2>Generated Image</h2>
+        <div class="generated-image-frame">
+          <img id="generatedImage" alt="Generated image will appear here" />
+          <div id="generatedEmptyState" class="empty-state">Your generated image will appear here</div>
+        </div>
+      </div>
+
+      <div class="panel result-panel">
+        <h2>Generated Prompt</h2>
+        <p class="disclaimer">
+          Results may vary based on image quality and selected options.
+        </p>
+        <textarea id="result" readonly placeholder="Your generated prompt will appear here"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

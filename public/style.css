@@ -1,0 +1,268 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #050505;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.page {
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 34px 28px 56px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.brand-tag {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #d4b467;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0 0 12px;
+  font-size: 64px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+}
+
+.headline {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #ececec;
+  line-height: 1.35;
+}
+
+.subtext {
+  margin: 0 auto;
+  max-width: 760px;
+  font-size: 19px;
+  color: #b7b7b7;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.panel {
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.panel h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.help-text,
+.disclaimer,
+.status-message {
+  color: #bfbfbf;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.status-message {
+  margin-top: 16px;
+  min-height: 24px;
+}
+
+label {
+  display: block;
+  margin: 16px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #3a3a3a;
+  background: #f4f4f4;
+  color: #111111;
+  font-size: 15px;
+  padding: 14px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 460px;
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.button-group {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: #d8b56a;
+  color: #111111;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #caa24f;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.image-frame,
+.generated-image-frame {
+  margin-top: 18px;
+  min-height: 420px;
+  background: #0a0a0a;
+  border: 1px dashed #3f3f3f;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.generated-image-frame {
+  min-height: 620px;
+}
+
+#preview,
+#generatedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+}
+
+.empty-state {
+  color: #7f7f7f;
+  text-align: center;
+  font-size: 15px;
+  padding: 20px;
+}
+
+.result-panel,
+.output-panel {
+  margin-top: 0;
+}
+
+#spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top: 2px solid #d4b467;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1100px) {
+  .header h1 {
+    font-size: 50px;
+  }
+
+  .headline {
+    font-size: 19px;
+  }
+
+  .subtext {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page {
+    padding: 26px 18px 42px;
+  }
+
+  .brand-tag {
+    font-size: 15px;
+    letter-spacing: 2.4px;
+  }
+
+  .header h1 {
+    font-size: 38px;
+    letter-spacing: -1px;
+  }
+
+  .headline {
+    font-size: 17px;
+  }
+
+  .subtext {
+    font-size: 15px;
+    max-width: 100%;
+  }
+
+  .generated-image-frame {
+    min-height: 420px;
+  }
+
+  textarea {
+    min-height: 300px;
+  }
+}
