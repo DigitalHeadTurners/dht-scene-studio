@@ -53,7 +53,7 @@ function buildPrompt() {
   );
 
   promptParts.push(
-    "Reference image is for facial identity only. Do not carry over background, objects, props, or styling unless explicitly defined below."
+    "Reference image is for facial identity only. Do not carry over ANY objects, props, accessories, clothing, background elements, or hand-held items from the reference image under any circumstance."
   );
 
   promptParts.push(
@@ -101,7 +101,7 @@ function buildPrompt() {
   promptParts.push(`Mood: ${category}`);
 
   promptParts.push(
-    "Expression: controlled, natural, confident. No exaggerated smiles, no blank stare, no harsh or angry expression unless explicitly required."
+    "Expression must match the selected pose exactly. Do not default to neutral if laughter or emotion is specified."
   );
 
   promptParts.push(
@@ -131,7 +131,7 @@ function buildPrompt() {
   );
 
   promptParts.push(
-    "Do not introduce random props, extra people, text, logos, or unrelated objects."
+    "Do not introduce or carry over any props, objects, or accessories unless explicitly defined. This includes phones, bags, drinks, tools, or any handheld items from the reference image."
   );
 
   promptParts.push(
@@ -149,6 +149,21 @@ function buildPrompt() {
   promptParts.push(
     "Output: ultra-clean, high detail, luxury editorial image. Realistic skin texture, correct anatomy, balanced lighting, no AI artifacts."
   );
+
+// EXPRESSION MAPPING (ADD THIS BLOCK RIGHT ABOVE RETURN)
+
+const poseExpressionMap = {
+  "Mirror selfie": "Expression: confident, composed, direct gaze.",
+  "Walking candid": "Expression: natural, relaxed, soft engagement.",
+ "Laughing candid": "Expression: strong visible laughter. Subject must be smiling clearly with teeth visible. Eyes must show joy and engagement. This is a candid laugh moment. Do not produce a neutral or closed-mouth expression under any circumstance.",
+  "Standing pose": "Expression: controlled, confident, neutral or soft smile."
+};
+
+if (poseExpressionMap[pose]) {
+  promptParts.push(poseExpressionMap[pose]);
+}
+
+// EXISTING RETURN (leave this exactly as-is)
 
   return promptParts.join("\\n\\n");
 }
