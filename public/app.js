@@ -48,62 +48,101 @@ function buildPrompt() {
 
   const promptParts = [];
 
+  // IDENTITY LOCK + PROP BLOCK
   promptParts.push(
-    "Facial identity reference required. Maintain exact likeness with high fidelity. Do not alter facial structure, features, proportions, or skin tone. Do not beautify into a different person."
+    "Facial identity lock: Maintain exact facial structure, skin tone, and proportions. Reference image is for identity only. Do not transfer any objects, props, accessories, clothing, hand-held items, or background elements from the reference image."
   );
 
+  // CORE SCENE + STYLING DIRECTION
   promptParts.push(
-    "Reference image is for facial identity only. Do not carry over ANY objects, props, accessories, clothing, background elements, or hand-held items from the reference image under any circumstance."
-  );
-
-  promptParts.push(
-    `${category}. ${scene}. ${pose} with intentional, natural, confident body positioning.`
-  );
-
-  promptParts.push(
-    "Styling must feel luxury, intentional, and editorial. Avoid basic outfits, generic fashion, or mid-tier styling. Everything must read as styled, not accidental."
+    `Scene: ${scene}. Mood: ${category}. Pose: ${pose}. Luxury editorial styling with intentional, high-fashion direction. Tailored, sculpted, or structured silhouette. No basic or generic outfits. Must feel magazine-level and styled.`
   );
 
   const stylingMap = {
     "Sleek and polished":
-      "Structured silhouette, controlled luxury finish, sleek hair or controlled waves, soft glam contour, minimal high-end accessories, elevated heels.",
+      "Styling: structured silhouette, controlled luxury finish, sleek hair or controlled waves, soft glam contour, minimal high-end accessories, elevated heels.",
 
     "Soft glam":
-      "Feminine fitted silhouette, refined textures, soft waves or blowout, glowing skin, soft eyes, neutral lips, elegant heels, delicate jewelry.",
+      "Styling: feminine fitted silhouette, refined textures, soft waves or blowout, glowing skin, soft eyes, neutral lips, elegant heels, delicate jewelry.",
 
     "Bold glam":
-      "Strong silhouette, fashion-forward drama, full glam makeup, statement jewelry, high-impact heels.",
+      "Styling: strong silhouette, fashion-forward drama, full glam makeup, statement jewelry, high-impact heels.",
 
     "Sporty luxe":
-      "Luxury athleisure or fitted activewear, premium materials, clean high-end sneakers, minimal luxury accessories.",
+      "Styling: luxury athleisure or fitted activewear, premium materials, clean high-end sneakers, minimal luxury accessories.",
 
     "Feminine luxury":
-      "Fitted feminine silhouette, elegant structure, refined jewelry, luxury handbag, polished hair, soft glam glow.",
+      "Styling: fitted feminine silhouette, elegant structure, refined jewelry, luxury handbag, polished hair, soft glam glow.",
 
     "High-fashion editorial":
-      "Editorial designer styling. Tailored, sculpted, or sharply structured silhouette. No basic outfits. Must feel magazine-level.",
+      "Styling: editorial designer styling. Tailored, sculpted, or sharply structured silhouette. No basic outfits. Must feel magazine-level.",
 
     "Effortless rich-girl":
-      "Minimal but expensive, relaxed but curated, quiet luxury accessories, polished hair, understated glam.",
+      "Styling: minimal but expensive, relaxed but curated, quiet luxury accessories, polished hair, understated glam.",
 
     "Classy and refined":
-      "Timeless tailoring, elegant restraint, neutral glam, classic luxury accessories."
+      "Styling: timeless tailoring, elegant restraint, neutral glam, classic luxury accessories."
   };
 
-  promptParts.push(stylingMap[styling]);
+  if (stylingMap[styling]) {
+    promptParts.push(stylingMap[styling]);
+  }
 
+  // COLOR
   if (colorDirection !== "No Preference") {
     promptParts.push(
       `Color direction: ${colorDirection}. Use refined tonal balance with luxury coordination.`
     );
   }
 
-  promptParts.push(`Mood: ${category}`);
-
+  // EXPRESSION CONTROL
   promptParts.push(
     "Expression must match the selected pose exactly. Do not default to neutral if laughter or emotion is specified."
   );
 
+  const poseExpressionMap = {
+    "Mirror selfie":
+      "Expression: confident, composed, direct gaze.",
+
+    "Seated confident pose":
+      "Expression: controlled, confident, neutral or soft smile.",
+
+    "Walking toward camera":
+      "Expression: natural, relaxed, soft engagement.",
+
+    "Over-the-shoulder look":
+      "Expression: poised, softly confident, elegant restraint.",
+
+    "Stepping out of car":
+      "Expression: calm, polished, composed confidence.",
+
+    "Standing with hand on hip":
+      "Expression: controlled, confident, neutral or soft smile.",
+
+    "Candid laugh":
+      "Expression: strong visible laughter. Subject must be smiling clearly with teeth visible. Eyes must show joy and engagement. This is a candid laugh moment. Do not produce a neutral or closed-mouth expression under any circumstance.",
+
+    "Looking away":
+      "Expression: natural, relaxed, subtle emotion, not blank or severe.",
+
+    "Leaning pose":
+      "Expression: effortless, relaxed confidence, subtle softness in the face.",
+
+    "Phone interaction":
+      "Expression: candid, engaged, relaxed, softly focused.",
+
+    "Adjusting outfit or hair":
+      "Expression: softly composed, naturally engaged, polished and feminine.",
+
+    "Crossed-leg stance":
+      "Expression: poised, elegant, controlled confidence."
+  };
+
+  if (poseExpressionMap[pose]) {
+    promptParts.push(poseExpressionMap[pose]);
+  }
+
+  // BODY + HANDS + FOOTWEAR
   promptParts.push(
     "Body realism: correct anatomy, natural proportions, balanced weight distribution, no stiffness, no broken limbs, no unnatural bending."
   );
@@ -116,6 +155,7 @@ function buildPrompt() {
     "Footwear must match styling and feel high-end. No cheap sandals, no generic flats unless intentional. Heels or elevated footwear preferred when visible."
   );
 
+  // COMPOSITION
   if (size === "9:16") {
     promptParts.push(
       "Composition: vertical 9:16, full-body or strong mid-body framing. Preserve silhouette and outfit visibility."
@@ -126,12 +166,13 @@ function buildPrompt() {
     );
   }
 
+  // ENVIRONMENT + RENDERING
   promptParts.push(
-    "Environment: clean, intentional, minimal distractions. No clutter. Background should support subject, not compete."
+    "Environment: clean, intentional, minimal distractions. No clutter. Background should support the subject, not compete."
   );
 
   promptParts.push(
-    "Do not introduce or carry over any props, objects, or accessories unless explicitly defined. This includes phones, bags, drinks, tools, or any handheld items from the reference image."
+    "Do not introduce random props, extra people, text, logos, or unrelated objects."
   );
 
   promptParts.push(
@@ -139,33 +180,20 @@ function buildPrompt() {
   );
 
   const strengthMap = {
-    "Subtle variation": "Subtle variation only.",
-    "Moderate transformation": "Moderate transformation.",
-    "Full creative transformation": "High transformation while preserving identity."
+    "Subtle variation": "Transformation: subtle variation only.",
+    "Moderate transformation": "Transformation: moderate transformation.",
+    "Full creative transformation": "Transformation: high transformation while preserving identity."
   };
 
-  promptParts.push(strengthMap[strength]);
+  if (strengthMap[strength]) {
+    promptParts.push(strengthMap[strength]);
+  }
 
   promptParts.push(
     "Output: ultra-clean, high detail, luxury editorial image. Realistic skin texture, correct anatomy, balanced lighting, no AI artifacts."
   );
 
-// EXPRESSION MAPPING (ADD THIS BLOCK RIGHT ABOVE RETURN)
-
-const poseExpressionMap = {
-  "Mirror selfie": "Expression: confident, composed, direct gaze.",
-  "Walking candid": "Expression: natural, relaxed, soft engagement.",
- "Laughing candid": "Expression: strong visible laughter. Subject must be smiling clearly with teeth visible. Eyes must show joy and engagement. This is a candid laugh moment. Do not produce a neutral or closed-mouth expression under any circumstance.",
-  "Standing pose": "Expression: controlled, confident, neutral or soft smile."
-};
-
-if (poseExpressionMap[pose]) {
-  promptParts.push(poseExpressionMap[pose]);
-}
-
-// EXISTING RETURN (leave this exactly as-is)
-
-  return promptParts.join("\\n\\n");
+  return promptParts.join("\n\n");
 }
 
 // GENERATE PROMPT
