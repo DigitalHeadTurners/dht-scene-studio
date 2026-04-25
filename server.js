@@ -139,7 +139,6 @@ Maintain realistic posture, believable pose transitions, and natural body alignm
 
 app.post(
   "/generate-image",
-  requireAuth(),
   requireApprovedBuyer,
   generateLimiter,
   upload.single("referenceImage"),
