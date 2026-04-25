@@ -235,10 +235,15 @@ if (generateImageBtn) {
       formData.append("prompt", prompt);
       formData.append("sizeChoice", document.getElementById("size").value);
 
-      const response = await fetch("/generate-image", {
-        method: "POST",
-        body: formData
-      });
+     const token = await window.Clerk.session?.getToken();
+
+const response = await fetch("/generate-image", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+  body: formData,
+});
 
       const data = await response.json();
 
