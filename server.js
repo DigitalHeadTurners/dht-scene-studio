@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import { GoogleGenAI, Modality } from "@google/genai";
 import path from "path";
 import { fileURLToPath } from "url";
+import { clerkMiddleware, requireAuth, getAuth } from "@clerk/express";
 
 dotenv.config();
 
@@ -15,31 +16,69 @@ const port = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.static(path.join(__dirname, "public")));
+const allowedOrigins = ["https://dht-scene-studio.onrender.com"];
 
-const allowedOrigins = [
-  "https://dht-scene-studio.onrender.com"
-];
+const approvedEmails = (process.env.APPROVED_EMAILS || "")
+  .split(",")
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
 
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  }
-}));
+app.use(clerkMiddleware());
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+function requireApprovedBuyer(req, res, next) {
+  const { userId, sessionClaims } = getAuth(req);
+
+  if (!userId) {
+    return res.status(401).json({ error: "Please sign in to use this app." });
+  }
+
+  const email =
+    sessionClaims?.email ||
+    sessionClaims?.primary_email_address ||
+    sessionClaims?.email_address ||
+    sessionClaims?.claims?.email;
+
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+
+  if (!approvedEmails.includes(normalizedEmail)) {
+    return res.status(403).json({
+      error:
+        "This email does not have access. Please use the same email used at checkout.",
+    });
+  }
+
+  next();
+}
+
+app.get("/config.js", (req, res) => {
+  res.type("application/javascript");
+  res.send(
+    `window.CLERK_PUBLISHABLE_KEY = "${process.env.CLERK_PUBLISHABLE_KEY || ""}";`
+  );
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024
-  }
+    fileSize: 10 * 1024 * 1024,
+  },
 });
 
 const generateLimiter = rateLimit({
@@ -48,12 +87,12 @@ const generateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: {
-    error: "Too many image requests. Please wait a few minutes and try again."
-  }
+    error: "Too many image requests. Please wait a few minutes and try again.",
+  },
 });
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 function buildOptimizedPrompt(prompt) {
@@ -94,12 +133,14 @@ Maintain realistic posture, believable pose transitions, and natural body alignm
     identityLock.trim(),
     prompt.trim(),
     qualityBoost.trim(),
-    compositionControl.trim()
+    compositionControl.trim(),
   ].join("\n\n");
 }
 
 app.post(
   "/generate-image",
+  requireAuth(),
+  requireApprovedBuyer,
   generateLimiter,
   upload.single("referenceImage"),
   async (req, res) => {
@@ -127,46 +168,44 @@ app.post(
       const imagePart = {
         inlineData: {
           mimeType: req.file.mimetype,
-          data: req.file.buffer.toString("base64")
-        }
+          data: req.file.buffer.toString("base64"),
+        },
       };
 
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash-image",
-        contents: [
-          imagePart,
-          { text: optimizedPrompt }
-        ],
+        contents: [imagePart, { text: optimizedPrompt }],
         config: {
           responseModalities: [Modality.IMAGE, Modality.TEXT],
           temperature: 0.4,
           topP: 0.9,
           topK: 32,
-          maxOutputTokens: 8192
-        }
+          maxOutputTokens: 8192,
+        },
       });
 
       const parts = response.candidates?.[0]?.content?.parts || [];
-
       const imagePartFromResponse = parts.find(
         (part) => part.inlineData && part.inlineData.data
       );
 
       if (!imagePartFromResponse) {
         const textPart = parts.find((part) => typeof part.text === "string");
+
         return res.status(500).json({
-          error: textPart?.text || "No image was returned by Gemini."
+          error: textPart?.text || "No image was returned by Gemini.",
         });
       }
 
       return res.json({
         imageBase64: imagePartFromResponse.inlineData.data,
-        mimeType: imagePartFromResponse.inlineData.mimeType || "image/png"
+        mimeType: imagePartFromResponse.inlineData.mimeType || "image/png",
       });
     } catch (error) {
       console.error("Image generation error:", error);
+
       return res.status(500).json({
-        error: error.message || "Image generation failed."
+        error: error.message || "Image generation failed.",
       });
     }
   }
