@@ -7,6 +7,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import path from "path";
 import { fileURLToPath } from "url";
 import { clerkMiddleware, getAuth } from "@clerk/express";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
@@ -18,10 +19,10 @@ const __dirname = path.dirname(__filename);
 
 const allowedOrigins = ["https://dht-scene-studio.onrender.com"];
 
-const approvedEmails = (process.env.APPROVED_EMAILS || "")
-  .split(",")
-  .map((email) => email.trim().toLowerCase())
-  .filter(Boolean);
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 app.use(clerkMiddleware());
 
@@ -75,12 +76,26 @@ async function requireApprovedBuyer(req, res, next) {
       });
     }
 
-    if (!approvedEmails.includes(email)) {
-      return res.status(403).json({
-        error:
-          "This email does not have access. Please use the same email used at checkout.",
-      });
-    }
+    const { data: customer, error } = await supabase
+  .from("customers")
+  .select("email, active")
+  .eq("email", email)
+  .eq("active", true)
+  .maybeSingle();
+
+if (error) {
+  console.error("Supabase access check error:", error);
+  return res.status(500).json({
+    error: "Access check failed. Please try again.",
+  });
+}
+
+if (!customer) {
+  return res.status(403).json({
+    error:
+      "This email does not have access. Please use the same email used at checkout.",
+  });
+}
 
     req.userEmail = email;
     next();
