@@ -191,13 +191,22 @@
 
       await window.Clerk.load({ publishableKey: clerkKey });
 
-      if (!window.Clerk.user) {
-        window.Clerk.mountSignIn(document.getElementById("clerk-sign-in"), {
-          afterSignInUrl: "/",
-          afterSignUpUrl: "/"
-        });
-        return;
-      }
+     if (!window.Clerk.user) {
+  const mountNode = document.getElementById("clerk-sign-in");
+
+  if (!mountNode) {
+    authMessage.textContent = "Login failed to load. Please refresh.";
+    return;
+  }
+
+  window.Clerk.mountSignIn(mountNode, {
+    signInUrl: "/",
+    afterSignInUrl: "/",
+    afterSignUpUrl: "/"
+  });
+
+  return;
+}
 
       authScreen.style.display = "none";
       appScreen.style.display = "block";
