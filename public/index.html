@@ -189,15 +189,21 @@
         return;
       }
 
-      await window.Clerk.load({ publishableKey: clerkKey });
+await window.Clerk.load({
+  publishableKey: clerkKey
+});
 
-      if (!window.Clerk.user) {
-        window.Clerk.mountSignIn(document.getElementById("clerk-sign-in"), {
-          afterSignInUrl: "/",
-          afterSignUpUrl: "/"
-        });
-        return;
-      }
+if (!window.Clerk.user) {
+  const signInDiv = document.getElementById("clerk-sign-in");
+
+  window.Clerk.mountSignIn(signInDiv, {
+    signUpUrl: "/",
+    afterSignInUrl: "/",
+    afterSignUpUrl: "/"
+  });
+
+  return;
+}
 
       authScreen.style.display = "none";
       appScreen.style.display = "block";
