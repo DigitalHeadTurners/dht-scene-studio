@@ -6,13 +6,6 @@
   <title>DHT Signature Scene Studio</title>
   <link rel="stylesheet" href="style.css" />
   <script src="/config.js"></script>
- <script
-  async
-  crossorigin="anonymous"
-  src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
-  type="text/javascript"
-  data-clerk-publishable-key="pk_test_Y2hvaWNlLWFudC0yNy5jbGVyay5hY2NvdW50cy5kZXYk"
-></script>
 </head>
 
 <body>
@@ -29,10 +22,13 @@
     <div class="page">
       <header class="header">
         <img src="logo.png" alt="Digital Head Turners Signature Scene Studio" class="logo" />
+
         <h1 class="headline">Transform your image into a high-end, luxury editorial scene</h1>
+
         <p class="subtext">
           Upload your photo. Select your scene. Generate a polished, scroll-stopping visual with precision styling and identity retention.
         </p>
+
         <img src="hero-banner.png" alt="DHT Scene Studio Preview" class="hero-banner" />
       </header>
 
@@ -158,6 +154,7 @@
         <section class="results-grid">
           <div class="panel output-panel">
             <h2>Generated Image</h2>
+
             <div class="generated-image-frame">
               <img id="generatedImage" alt="Generated result" />
               <div id="generatedEmptyState" class="empty-state">Your generated image will appear here</div>
@@ -179,10 +176,25 @@
   </div>
 
   <script>
+    function loadClerkScript(clerkKey) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js";
+        script.async = true;
+        script.crossOrigin = "anonymous";
+        script.type = "text/javascript";
+        script.setAttribute("data-clerk-publishable-key", clerkKey);
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
     async function startClerkLogin() {
       const authScreen = document.getElementById("auth-screen");
       const appScreen = document.getElementById("app-screen");
       const authMessage = document.getElementById("auth-message");
+      const signInDiv = document.getElementById("clerk-sign-in");
       const clerkKey = window.CLERK_PUBLISHABLE_KEY;
 
       if (!clerkKey) {
@@ -190,25 +202,33 @@
         return;
       }
 
-await window.Clerk.load({
-  publishableKey: clerkKey
-});
+      try {
+        await loadClerkScript(clerkKey);
 
-if (!window.Clerk.user) {
-  const signInDiv = document.getElementById("clerk-sign-in");
+        if (!window.Clerk) {
+          authMessage.textContent = "Login system did not load. Please refresh.";
+          return;
+        }
 
-  window.Clerk.mountSignIn(signInDiv, {
-    signUpUrl: "/",
-    afterSignInUrl: "/",
-    afterSignUpUrl: "/"
-  });
+        await window.Clerk.load({ publishableKey: clerkKey });
 
-  return;
-}
+        if (!window.Clerk.user) {
+          window.Clerk.mountSignIn(signInDiv, {
+            signUpUrl: "/",
+            afterSignInUrl: "/",
+            afterSignUpUrl: "/"
+          });
 
-      authScreen.style.display = "none";
-      appScreen.style.display = "block";
-      document.body.dataset.authenticated = "true";
+          return;
+        }
+
+        authScreen.style.display = "none";
+        appScreen.style.display = "block";
+        document.body.dataset.authenticated = "true";
+      } catch (error) {
+        console.error("Clerk login error:", error);
+        authMessage.textContent = "Login failed to load. Please refresh.";
+      }
     }
 
     window.addEventListener("load", startClerkLogin);
