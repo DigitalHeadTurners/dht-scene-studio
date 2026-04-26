@@ -84,7 +84,7 @@ async function requireApprovedBuyer(req, res, next) {
   .select("email, active")
   .eq("email", email)
   .eq("active", true)
-  .maybeSingle();
+  .single();
 
 if (error) {
   console.error("Supabase access check error:", error);
