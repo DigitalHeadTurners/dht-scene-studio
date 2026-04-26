@@ -137,6 +137,63 @@ app.get("/auth-status", requireApprovedBuyer, (req, res) => {
   });
 });
 
+app.post("/approve-buyer", async (req, res) => {
+  try {
+    const { email, secret } = req.body;
+
+    if (!secret || secret !== process.env.ZAPIER_SECRET) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    if (!email) {
+      return res.status(400).json({
+        error: "Missing email",
+      });
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    const insertUrl = `${supabaseUrl}/rest/v1/customers`;
+
+    const response = await fetch(insertUrl, {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify({
+        email: normalizedEmail,
+        active: true,
+      }),
+    });
+
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      console.error("Approve buyer failed:", responseText);
+
+      return res.status(500).json({
+        error: "Buyer approval failed",
+      });
+    }
+
+    return res.json({
+      success: true,
+      email: normalizedEmail,
+    });
+  } catch (error) {
+    console.error("Approve buyer error:", error);
+
+    return res.status(500).json({
+      error: "Buyer approval failed",
+    });
+  }
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 
 const upload = multer({
