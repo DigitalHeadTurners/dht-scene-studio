@@ -94,10 +94,10 @@ const accessResponse = await fetch(accessUrl, {
 });
 
 const accessText = await accessResponse.text();
-console.log("Supabase access status:", accessResponse.status);
-console.log("Supabase access response:", accessText);
 
 if (!accessResponse.ok) {
+  console.error("Supabase access failed:", accessText);
+
   return res.status(500).json({
     error: "Access check failed. Please try again.",
   });
