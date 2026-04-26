@@ -6,7 +6,7 @@ import rateLimit from "express-rate-limit";
 import { GoogleGenAI, Modality } from "@google/genai";
 import path from "path";
 import { fileURLToPath } from "url";
-import { clerkMiddleware, requireAuth, getAuth } from "@clerk/express";
+import { clerkMiddleware, getAuth } from "@clerk/express";
 
 dotenv.config();
 
@@ -40,43 +40,70 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-function requireApprovedBuyer(req, res, next) {
-  const { userId, sessionClaims } = getAuth(req);
+async function getSignedInEmail(req) {
+  const auth = getAuth(req);
 
-  if (!userId) {
-    return res.status(401).json({ error: "Please sign in to use this app." });
+  if (!auth.userId) {
+    return null;
   }
 
-  const email =
-    sessionClaims?.email ||
-    sessionClaims?.primary_email_address ||
-    sessionClaims?.email_address ||
-    sessionClaims?.claims?.email;
+  const response = await fetch(`https://api.clerk.com/v1/users/${auth.userId}`, {
+    headers: {
+      Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+    },
+  });
 
-  const normalizedEmail = String(email || "").trim().toLowerCase();
+  if (!response.ok) {
+    return null;
+  }
 
-  if (!approvedEmails.includes(normalizedEmail)) {
-    return res.status(403).json({
-      error:
-        "This email does not have access. Please use the same email used at checkout.",
+  const user = await response.json();
+  const email = user.email_addresses?.find(
+    (item) => item.id === user.primary_email_address_id
+  )?.email_address;
+
+  return email ? email.toLowerCase() : null;
+}
+
+async function requireApprovedBuyer(req, res, next) {
+  try {
+    const email = await getSignedInEmail(req);
+
+    if (!email) {
+      return res.status(401).json({
+        error: "Please sign in to use this app.",
+      });
+    }
+
+    if (!approvedEmails.includes(email)) {
+      return res.status(403).json({
+        error:
+          "This email does not have access. Please use the same email used at checkout.",
+      });
+    }
+
+    req.userEmail = email;
+    next();
+  } catch (error) {
+    console.error("Buyer check error:", error);
+    return res.status(500).json({
+      error: "Access check failed. Please refresh and try again.",
     });
   }
-
-  next();
 }
 
 app.get("/config.js", (req, res) => {
-  const key = process.env.CLERK_PUBLISHABLE_KEY;
-
-  console.log("CLERK KEY:", key); // debug
-
   res.type("application/javascript");
+  res.send(
+    `window.CLERK_PUBLISHABLE_KEY = "${process.env.CLERK_PUBLISHABLE_KEY || ""}";`
+  );
+});
 
-  if (!key) {
-    return res.send(`window.CLERK_PUBLISHABLE_KEY = "";`);
-  }
-
-  res.send(`window.CLERK_PUBLISHABLE_KEY = "${key}";`);
+app.get("/auth-status", requireApprovedBuyer, (req, res) => {
+  res.json({
+    approved: true,
+    email: req.userEmail,
+  });
 });
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -151,12 +178,6 @@ app.post(
   upload.single("referenceImage"),
   async (req, res) => {
     try {
-      const origin = req.headers.origin;
-
-      if (origin && !allowedOrigins.includes(origin)) {
-        return res.status(403).json({ error: "Not allowed." });
-      }
-
       if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({ error: "Missing GEMINI_API_KEY." });
       }
