@@ -213,11 +213,11 @@
         await window.Clerk.load({ publishableKey: clerkKey });
 
         if (!window.Clerk.user) {
-          window.Clerk.mountSignIn(signInDiv, {
-            signUpUrl: "/",
-            afterSignInUrl: "/",
-            afterSignUpUrl: "/"
-          });
+         window.Clerk.mountSignIn(signInDiv, {
+  withSignUp: true,
+  fallbackRedirectUrl: "/",
+  signUpFallbackRedirectUrl: "/"
+});
 
           return;
         }
