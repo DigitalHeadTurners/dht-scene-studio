@@ -79,19 +79,32 @@ async function requireApprovedBuyer(req, res, next) {
       });
     }
 
-    const { data: customer, error } = await supabase
-  .from("customers")
-  .select("email, active")
-  .eq("email", email)
-  .eq("active", true)
-  .single();
+    console.log("Checking access for:", email);
 
-if (error) {
-  console.error("Supabase access check error:", error);
+const accessUrl =
+  `${supabaseUrl}/rest/v1/customers?select=email,active&email=eq.${encodeURIComponent(email)}&active=eq.true&limit=1`;
+
+console.log("Supabase access URL:", accessUrl);
+
+const accessResponse = await fetch(accessUrl, {
+  headers: {
+    apikey: supabaseKey,
+    Authorization: `Bearer ${supabaseKey}`,
+  },
+});
+
+const accessText = await accessResponse.text();
+console.log("Supabase access status:", accessResponse.status);
+console.log("Supabase access response:", accessText);
+
+if (!accessResponse.ok) {
   return res.status(500).json({
     error: "Access check failed. Please try again.",
   });
 }
+
+const customers = JSON.parse(accessText);
+const customer = customers[0];
 
 if (!customer) {
   return res.status(403).json({
