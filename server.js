@@ -66,10 +66,17 @@ function requireApprovedBuyer(req, res, next) {
 }
 
 app.get("/config.js", (req, res) => {
+  const key = process.env.CLERK_PUBLISHABLE_KEY;
+
+  console.log("CLERK KEY:", key); // debug
+
   res.type("application/javascript");
-  res.send(
-    `window.CLERK_PUBLISHABLE_KEY = "${process.env.CLERK_PUBLISHABLE_KEY || ""}";`
-  );
+
+  if (!key) {
+    return res.send(`window.CLERK_PUBLISHABLE_KEY = "";`);
+  }
+
+  res.send(`window.CLERK_PUBLISHABLE_KEY = "${key}";`);
 });
 
 app.use(express.static(path.join(__dirname, "public")));
