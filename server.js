@@ -19,10 +19,13 @@ const __dirname = path.dirname(__filename);
 
 const allowedOrigins = ["https://dht-scene-studio.onrender.com"];
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const supabaseUrl = (process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
+const supabaseKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+
+console.log("Supabase URL:", supabaseUrl);
+console.log("Supabase key exists:", Boolean(supabaseKey));
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(clerkMiddleware());
 
